@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TypeScript Minesweeper</title>
+    <title>Buscaminas en TypeScript</title>
     <style>
       :root {
         --cell-size: 30px;
@@ -234,45 +234,51 @@
     </style>
   </head>
   <body>
-    <h1>Minesweeper</h1>
+    <h1>Buscaminas</h1>
 
     <div class="settings">
-      <select id="difficulty-select" aria-label="Select difficulty">
-        <option value="0">Beginner (9x9, 10 mines)</option>
-        <option value="1">Intermediate (16x16, 40 mines)</option>
-        <option value="2">Expert (30x16, 99 mines)</option>
+      <select id="difficulty-select" aria-label="Seleccionar dificultad">
+        <option value="0">Principiante (9x9, 10 minas)</option>
+        <option value="1">Intermedio (16x16, 40 minas)</option>
+        <option value="2">Experto (30x16, 99 minas)</option>
       </select>
-      <button id="new-game-button">New Game</button>
+      <button id="new-game-button">Nuevo Juego</button>
     </div>
 
     <div class="game-container">
       <div class="game-controls">
-        <div class="info-box" id="mine-counter" aria-label="Remaining mines">
+        <div class="info-box" id="mine-counter" aria-label="Minas restantes">
           000
         </div>
-        <div id="game-status" aria-live="polite">Click to start</div>
-        <div class="info-box" id="timer" aria-label="Elapsed time">000</div>
+        <div id="game-status" aria-live="polite">Haz clic para comenzar</div>
+        <div class="info-box" id="timer" aria-label="Tiempo transcurrido">
+          000
+        </div>
       </div>
 
       <div id="game-board" class="game-board" tabindex="-1"></div>
     </div>
 
     <div class="instructions">
-      <h2>How to Play</h2>
+      <h2>Cómo Jugar</h2>
       <ul>
-        <li><strong>Left-click</strong> on a square to reveal it.</li>
-        <li><strong>Right-click</strong> on a square to flag it as a mine.</li>
-        <li>Numbers show how many mines are adjacent to that square.</li>
-        <li>Clear all non-mine squares to win!</li>
-      </ul>
-      <h2>Keyboard Controls</h2>
-      <ul>
-        <li>Use <strong>Tab</strong> to navigate between cells</li>
+        <li><strong>Clic izquierdo</strong> en una casilla para revelarla.</li>
         <li>
-          Press <strong>Enter</strong> or <strong>Space</strong> to reveal a
-          cell
+          <strong>Clic derecho</strong> en una casilla para marcarla como mina.
         </li>
-        <li>Press <strong>F</strong> to flag/unflag a cell</li>
+        <li>
+          Los números indican cuántas minas hay en las casillas adyacentes.
+        </li>
+        <li>¡Revela todas las casillas sin minas para ganar!</li>
+      </ul>
+      <h2>Controles de Teclado</h2>
+      <ul>
+        <li>Usa <strong>Tab</strong> para navegar entre las casillas</li>
+        <li>
+          Presiona <strong>Enter</strong> o <strong>Espacio</strong> para
+          revelar una casilla
+        </li>
+        <li>Presiona <strong>F</strong> para marcar/desmarcar una casilla</li>
       </ul>
     </div>
 
