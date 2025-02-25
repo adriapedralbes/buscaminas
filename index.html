@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TypeScript Minesweeper</title>
+    <style>
+      :root {
+        --cell-size: 30px;
+        --board-border-color: #999;
+        --hidden-cell-bg: #ddd;
+        --revealed-cell-bg: #f8f8f8;
+        --mine-color: #ff4d4d;
+        --adjacent-1-color: #0000ff;
+        --adjacent-2-color: #008000;
+        --adjacent-3-color: #ff0000;
+        --adjacent-4-color: #000080;
+        --adjacent-5-color: #800000;
+        --adjacent-6-color: #008080;
+        --adjacent-7-color: #000000;
+        --adjacent-8-color: #808080;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .game-controls {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 15px;
+        background-color: #e0e0e0;
+        box-sizing: border-box;
+      }
+
+      .game-info {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .info-box {
+        background-color: black;
+        color: red;
+        font-family: "Courier New", monospace;
+        font-size: 1.5rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        min-width: 50px;
+        text-align: center;
+      }
+
+      #game-status {
+        font-weight: bold;
+        padding: 5px 10px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        min-width: 150px;
+        text-align: center;
+      }
+
+      #game-status.in-progress {
+        color: #0066cc;
+      }
+
+      #game-status.won {
+        color: #009900;
+        background-color: #e6ffe6;
+      }
+
+      #game-status.lost {
+        color: #cc0000;
+        background-color: #ffe6e6;
+      }
+
+      .game-board {
+        display: grid;
+        grid-gap: 1px;
+        background-color: var(--board-border-color);
+        border: 2px solid var(--board-border-color);
+        padding: 2px;
+        margin-top: 10px;
+      }
+
+      .cell {
+        width: var(--cell-size);
+        height: var(--cell-size);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.1s;
+      }
+
+      .cell:focus {
+        outline: 2px solid #3399ff;
+        z-index: 1;
+      }
+
+      .cell.hidden {
+        background-color: var(--hidden-cell-bg);
+        border: 2px outset #bbb;
+      }
+
+      .cell.hidden:hover {
+        background-color: #d0d0d0;
+      }
+
+      .cell.revealed {
+        background-color: var(--revealed-cell-bg);
+        border: 1px solid #ccc;
+      }
+
+      .cell.flagged {
+        font-size: 1rem;
+      }
+
+      .cell.mine {
+        background-color: var(--mine-color);
+      }
+
+      .cell.adjacent-1 {
+        color: var(--adjacent-1-color);
+      }
+      .cell.adjacent-2 {
+        color: var(--adjacent-2-color);
+      }
+      .cell.adjacent-3 {
+        color: var(--adjacent-3-color);
+      }
+      .cell.adjacent-4 {
+        color: var(--adjacent-4-color);
+      }
+      .cell.adjacent-5 {
+        color: var(--adjacent-5-color);
+      }
+      .cell.adjacent-6 {
+        color: var(--adjacent-6-color);
+      }
+      .cell.adjacent-7 {
+        color: var(--adjacent-7-color);
+      }
+      .cell.adjacent-8 {
+        color: var(--adjacent-8-color);
+      }
+
+      .settings {
+        margin: 10px 0 20px 0;
+        display: flex;
+        gap: 10px;
+      }
+
+      button,
+      select {
+        padding: 8px 16px;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #4caf50;
+        color: white;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      select {
+        background-color: #3498db;
+      }
+
+      select:hover {
+        background-color: #2980b9;
+      }
+
+      .instructions {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .instructions h2 {
+        margin-top: 0;
+        color: #333;
+      }
+
+      .instructions ul {
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 600px) {
+        .game-controls {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        #game-status {
+          order: -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Minesweeper</h1>
+
+    <div class="settings">
+      <select id="difficulty-select" aria-label="Select difficulty">
+        <option value="0">Beginner (9x9, 10 mines)</option>
+        <option value="1">Intermediate (16x16, 40 mines)</option>
+        <option value="2">Expert (30x16, 99 mines)</option>
+      </select>
+      <button id="new-game-button">New Game</button>
+    </div>
+
+    <div class="game-container">
+      <div class="game-controls">
+        <div class="info-box" id="mine-counter" aria-label="Remaining mines">
+          000
+        </div>
+        <div id="game-status" aria-live="polite">Click to start</div>
+        <div class="info-box" id="timer" aria-label="Elapsed time">000</div>
+      </div>
+
+      <div id="game-board" class="game-board" tabindex="-1"></div>
+    </div>
+
+    <div class="instructions">
+      <h2>How to Play</h2>
+      <ul>
+        <li><strong>Left-click</strong> on a square to reveal it.</li>
+        <li><strong>Right-click</strong> on a square to flag it as a mine.</li>
+        <li>Numbers show how many mines are adjacent to that square.</li>
+        <li>Clear all non-mine squares to win!</li>
+      </ul>
+      <h2>Keyboard Controls</h2>
+      <ul>
+        <li>Use <strong>Tab</strong> to navigate between cells</li>
+        <li>
+          Press <strong>Enter</strong> or <strong>Space</strong> to reveal a
+          cell
+        </li>
+        <li>Press <strong>F</strong> to flag/unflag a cell</li>
+      </ul>
+    </div>
+
+    <script src="minesweeper.js"></script>
+  </body>
+</html>
