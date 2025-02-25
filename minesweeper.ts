@@ -1,15 +1,15 @@
 /**
- * TypeScript Minesweeper Implementation
+ * Implementación de Buscaminas en TypeScript
  * 
- * A clean, modern implementation of the classic Minesweeper game using TypeScript.
- * This implementation follows object-oriented principles with a clear separation of
- * concerns between game logic and UI components.
+ * Una implementación limpia y moderna del clásico juego Buscaminas usando TypeScript.
+ * Sigue principios de programación orientada a objetos con una clara separación
+ * entre la lógica del juego y los componentes de la interfaz de usuario.
  */
 
-// ================= ENUMS AND INTERFACES =================
+// ================= ENUMS E INTERFACES =================
 
 /**
- * Represents the state of a cell on the game board
+ * Representa el estado de una celda en el tablero de juego
  */
 enum CellState {
     Hidden,
@@ -18,7 +18,7 @@ enum CellState {
 }
 
 /**
- * Represents the current status of the game
+ * Representa el estado actual del juego
  */
 enum GameStatus {
     NotStarted,
@@ -28,7 +28,7 @@ enum GameStatus {
 }
 
 /**
- * Represents the difficulty levels available in the game
+ * Representa los niveles de dificultad disponibles en el juego
  */
 enum GameDifficulty {
     Beginner,
@@ -37,7 +37,7 @@ enum GameDifficulty {
 }
 
 /**
- * Represents a position on the game board
+ * Representa una posición en el tablero de juego
  */
 interface Position {
     row: number;
@@ -45,7 +45,7 @@ interface Position {
 }
 
 /**
- * Configuration for the game board
+ * Configuración del tablero de juego
  */
 interface GameConfig {
     rows: number;
@@ -54,7 +54,7 @@ interface GameConfig {
 }
 
 /**
- * State of the game
+ * Estado del juego
  */
 interface GameState {
     status: GameStatus;
@@ -64,7 +64,7 @@ interface GameState {
 }
 
 /**
- * Result of revealing a cell
+ * Resultado de revelar una celda
  */
 interface RevealResult {
     success: boolean;
@@ -72,10 +72,10 @@ interface RevealResult {
     cellsRevealed: Position[];
 }
 
-// ================= CELL CLASS =================
+// ================= CLASE CELDA =================
 
 /**
- * Represents a single cell on the Minesweeper game board
+ * Representa una celda individual en el tablero de Buscaminas
  */
 class Cell {
     private position: Position;
@@ -84,10 +84,10 @@ class Cell {
     private state: CellState;
 
     /**
-     * Creates a new cell at the specified position
+     * Crea una nueva celda en la posición especificada
      * 
-     * @param position The position of the cell on the board
-     * @param isMine Whether the cell contains a mine
+     * @param position Posición de la celda en el tablero
+     * @param isMine Indica si la celda contiene una mina
      */
     constructor(position: Position, isMine: boolean = false) {
         this.position = position;
@@ -107,8 +107,8 @@ class Cell {
     setAdjacentMines(count: number): void { this.adjacentMines = count; }
 
     /**
-     * Reveals the cell if it's not flagged
-     * @returns true if the cell was revealed, false otherwise
+     * Revela la celda si no está marcada con bandera
+     * @returns true si la celda fue revelada, false en caso contrario
      */
     reveal(): boolean {
         if (this.state === CellState.Flagged) return false;
@@ -117,8 +117,8 @@ class Cell {
     }
 
     /**
-     * Toggles the flag state of the cell if it's not revealed
-     * @returns The new state of the cell
+     * Cambia el estado de bandera de la celda si no está revelada
+     * @returns El nuevo estado de la celda
      */
     toggleFlag(): CellState {
         if (this.state === CellState.Revealed) return this.state;
@@ -127,7 +127,7 @@ class Cell {
     }
 
     /**
-     * Resets the cell to its initial state
+     * Reinicia la celda a su estado inicial
      */
     reset(): void {
         this.state = CellState.Hidden;
@@ -136,10 +136,10 @@ class Cell {
     }
 }
 
-// ================= GAME BOARD CLASS =================
+// ================= CLASE TABLERO DE JUEGO =================
 
 /**
- * Represents the Minesweeper game board
+ * Representa el tablero de juego del Buscaminas
  */
 class GameBoard {
     private rows: number;
@@ -149,9 +149,9 @@ class GameBoard {
     private isFirstClick: boolean;
 
     /**
-     * Creates a new game board with the specified configuration
+     * Crea un nuevo tablero de juego con la configuración especificada
      * 
-     * @param config The configuration for the game board
+     * @param config Configuración para el tablero de juego
      */
     constructor(config: GameConfig) {
         this.rows = config.rows;
@@ -163,7 +163,7 @@ class GameBoard {
     }
 
     /**
-     * Initializes an empty game board
+     * Inicializa un tablero de juego vacío
      */
     private initializeBoard(): void {
         this.cells = [];
@@ -176,33 +176,33 @@ class GameBoard {
     }
 
     /**
-     * Places mines randomly on the board, ensuring the specified position is safe
+     * Coloca minas aleatoriamente en el tablero, asegurando que la posición especificada sea segura
      * 
-     * @param safePosition The position that should not contain a mine
+     * @param safePosition Posición que no debe contener una mina
      */
     placeMines(safePosition: Position): void {
-        let minesPlaced = 0;
+        let minasColocadas = 0;
 
-        while (minesPlaced < this.totalMines) {
+        while (minasColocadas < this.totalMines) {
             const row = Math.floor(Math.random() * this.rows);
             const col = Math.floor(Math.random() * this.cols);
 
-            // Skip if it's the safe position or already has a mine
+            // Saltar si es la posición segura o ya tiene mina
             if ((row === safePosition.row && col === safePosition.col) ||
                 this.cells[row][col].isMineCell()) {
                 continue;
             }
 
             this.cells[row][col].setMine(true);
-            minesPlaced++;
+            minasColocadas++;
         }
 
-        // Calculate adjacent mines for each cell
+        // Calcular minas adyacentes para cada celda
         this.calculateAdjacentMines();
     }
 
     /**
-     * Calculates the number of adjacent mines for each cell
+     * Calcula el número de minas adyacentes para cada celda
      */
     private calculateAdjacentMines(): void {
         for (let row = 0; row < this.rows; row++) {
@@ -216,19 +216,19 @@ class GameBoard {
     }
 
     /**
-     * Counts the number of mines adjacent to the specified position
+     * Cuenta el número de minas adyacentes a la posición especificada
      * 
-     * @param row The row of the position
-     * @param col The column of the position
-     * @returns The number of adjacent mines
+     * @param row Fila de la posición
+     * @param col Columna de la posición
+     * @returns Número de minas adyacentes
      */
     private countAdjacentMines(row: number, col: number): number {
         let count = 0;
 
-        // Check all 8 surrounding cells
+        // Verificar las 8 celdas circundantes
         for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {
             for (let c = Math.max(0, col - 1); c <= Math.min(this.cols - 1, col + 1); c++) {
-                // Skip the current cell
+                // Saltar la celda actual
                 if (r === row && c === col) continue;
 
                 if (this.cells[r][c].isMineCell()) {
@@ -241,15 +241,15 @@ class GameBoard {
     }
 
     /**
-     * Reveals the cell at the specified position
+     * Revela la celda en la posición especificada
      * 
-     * @param position The position to reveal
-     * @returns The result of the reveal operation
+     * @param position Posición a revelar
+     * @returns Resultado de la operación de revelar
      */
     revealCell(position: Position): RevealResult {
         const { row, col } = position;
 
-        // Handle first click
+        // Manejar primer clic
         if (this.isFirstClick) {
             this.isFirstClick = false;
             this.placeMines(position);
@@ -257,18 +257,18 @@ class GameBoard {
 
         const cell = this.cells[row][col];
 
-        // If the cell is flagged or already revealed, do nothing
+        // Si la celda está marcada o ya revelada, no hacer nada
         if (cell.getState() !== CellState.Hidden) {
             return { success: false, hitMine: false, cellsRevealed: [] };
         }
 
-        // If it's a mine, game over
+        // Si es una mina, fin del juego
         if (cell.isMineCell()) {
             cell.reveal();
             return { success: true, hitMine: true, cellsRevealed: [position] };
         }
 
-        // Otherwise, reveal the cell and potentially its neighbors
+        // Revelar la celda y potencialmente sus vecinas
         const revealedCells: Position[] = [];
         this.revealCellRecursive(row, col, revealedCells);
 
@@ -276,27 +276,27 @@ class GameBoard {
     }
 
     /**
-     * Recursively reveals cells, starting from the specified position
+     * Revela celdas recursivamente empezando desde la posición especificada
      * 
-     * @param row The row of the starting position
-     * @param col The column of the starting position
-     * @param revealedCells Array to collect revealed cell positions
+     * @param row Fila de la posición inicial
+     * @param col Columna de la posición inicial
+     * @param revealedCells Array para recolectar posiciones de celdas reveladas
      */
     private revealCellRecursive(row: number, col: number, revealedCells: Position[]): void {
         const cell = this.cells[row][col];
 
-        // Skip if cell is already revealed or flagged
+        // Saltar si la celda ya está revelada o marcada
         if (cell.getState() !== CellState.Hidden) return;
 
-        // Reveal the current cell
+        // Revelar la celda actual
         cell.reveal();
         revealedCells.push({ row, col });
 
-        // If it has no adjacent mines, reveal all neighboring cells
+        // Si no tiene minas adyacentes, revelar todas las vecinas
         if (cell.getAdjacentMines() === 0) {
             for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {
                 for (let c = Math.max(0, col - 1); c <= Math.min(this.cols - 1, col + 1); c++) {
-                    // Skip the current cell
+                    // Saltar la celda actual
                     if (r === row && c === col) continue;
 
                     this.revealCellRecursive(r, c, revealedCells);
@@ -306,10 +306,10 @@ class GameBoard {
     }
 
     /**
-     * Toggles the flag state of the cell at the specified position
+     * Cambia el estado de bandera de la celda en la posición especificada
      * 
-     * @param position The position to toggle
-     * @returns true if the cell is now flagged, false otherwise
+     * @param position Posición a cambiar
+     * @returns true si la celda ahora está marcada, false en caso contrario
      */
     toggleFlag(position: Position): boolean {
         const { row, col } = position;
@@ -320,16 +320,16 @@ class GameBoard {
     }
 
     /**
-     * Checks if the game has been won
+     * Verifica si el juego ha sido ganado
      * 
-     * @returns true if all non-mine cells are revealed
+     * @returns true si todas las celdas sin minas están reveladas
      */
     checkWinCondition(): boolean {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 const cell = this.cells[row][col];
 
-                // If a non-mine cell is still hidden, the game is not won
+                // Si una celda sin mina sigue oculta, el juego no se ha ganado
                 if (!cell.isMineCell() && cell.getState() !== CellState.Revealed) {
                     return false;
                 }
@@ -340,7 +340,7 @@ class GameBoard {
     }
 
     /**
-     * Reveals all mines on the board
+     * Revela todas las minas en el tablero
      */
     revealAllMines(): void {
         for (let row = 0; row < this.rows; row++) {
@@ -354,46 +354,46 @@ class GameBoard {
     }
 
     /**
-     * Gets the cell at the specified position
+     * Obtiene la celda en la posición especificada
      * 
-     * @param position The position to get
-     * @returns The cell at the specified position
+     * @param position Posición a obtener
+     * @returns La celda en la posición especificada
      */
     getCell(position: Position): Cell {
         return this.cells[position.row][position.col];
     }
 
     /**
-     * Gets all cells on the board
+     * Obtiene todas las celdas del tablero
      * 
-     * @returns A 2D array of all cells
+     * @returns Un array 2D con todas las celdas
      */
     getCells(): Cell[][] {
         return this.cells;
     }
 
     /**
-     * Gets the dimensions of the board
+     * Obtiene las dimensiones del tablero
      * 
-     * @returns The rows and columns of the board
+     * @returns Filas y columnas del tablero
      */
     getDimensions(): { rows: number, cols: number } {
         return { rows: this.rows, cols: this.cols };
     }
 
     /**
-     * Gets the total number of mines on the board
+     * Obtiene el número total de minas en el tablero
      * 
-     * @returns The number of mines
+     * @returns Número de minas
      */
     getMineCount(): number {
         return this.totalMines;
     }
 
     /**
-     * Resets the game board with the specified configuration
+     * Reinicia el tablero con la configuración especificada
      * 
-     * @param config The configuration for the game board
+     * @param config Configuración para el tablero
      */
     reset(config: GameConfig): void {
         this.rows = config.rows;
@@ -405,10 +405,10 @@ class GameBoard {
     }
 }
 
-// ================= GAME CONTROLLER CLASS =================
+// ================= CLASE CONTROLADOR DEL JUEGO =================
 
 /**
- * Controls the game flow and handles user interactions
+ * Controla el flujo del juego y maneja las interacciones del usuario
  */
 class GameController {
     private gameBoard: GameBoard;
@@ -418,9 +418,9 @@ class GameController {
     private uiRenderer: UIRenderer;
 
     /**
-     * Creates a new game controller
+     * Crea un nuevo controlador de juego
      * 
-     * @param uiRenderer The UI renderer to use
+     * @param uiRenderer El renderizador de UI a utilizar
      */
     constructor(uiRenderer: UIRenderer) {
         this.uiRenderer = uiRenderer;
@@ -433,14 +433,14 @@ class GameController {
         this.timer = null;
         this.startTime = 0;
 
-        // Initialize with beginner difficulty by default
+        // Inicializar con dificultad principiante por defecto
         this.setDifficulty(GameDifficulty.Beginner);
     }
 
     /**
-     * Sets the difficulty of the game
+     * Establece la dificultad del juego
      * 
-     * @param difficulty The difficulty to set
+     * @param difficulty Dificultad a establecer
      */
     setDifficulty(difficulty: GameDifficulty): void {
         let config: GameConfig;
@@ -471,7 +471,7 @@ class GameController {
     }
 
     /**
-     * Resets the game to its initial state
+     * Reinicia el juego a su estado inicial
      */
     resetGame(): void {
         this.stopTimer();
@@ -487,17 +487,17 @@ class GameController {
     }
 
     /**
-     * Handles a left-click on a cell
+     * Maneja un clic izquierdo en una celda
      * 
-     * @param position The position that was clicked
+     * @param position Posición clickeada
      */
     handleCellClick(position: Position): void {
-        // Ignore clicks if game is over
+        // Ignorar clics si el juego terminó
         if (this.gameState.status === GameStatus.Won || this.gameState.status === GameStatus.Lost) {
             return;
         }
 
-        // Start timer on first click
+        // Iniciar temporizador en el primer clic
         if (this.gameState.status === GameStatus.NotStarted) {
             this.startTimer();
             this.gameState.status = GameStatus.InProgress;
@@ -509,12 +509,12 @@ class GameController {
             if (result.hitMine) {
                 this.gameOver(false);
             } else {
-                // Update UI for all revealed cells
+                // Actualizar UI para celdas reveladas
                 for (const pos of result.cellsRevealed) {
                     this.uiRenderer.updateCell(this.gameBoard.getCell(pos));
                 }
 
-                // Check for win condition
+                // Verificar condición de victoria
                 if (this.gameBoard.checkWinCondition()) {
                     this.gameOver(true);
                 }
@@ -525,18 +525,18 @@ class GameController {
     }
 
     /**
-     * Handles a right-click on a cell
+     * Maneja un clic derecho en una celda
      * 
-     * @param position The position that was right-clicked
+     * @param position Posición clickeada
      */
     handleCellRightClick(position: Position): void {
-        // Ignore right-clicks if game is not in progress
+        // Ignorar si el juego no está en progreso
         if (this.gameState.status !== GameStatus.InProgress &&
             this.gameState.status !== GameStatus.NotStarted) {
             return;
         }
 
-        // Start timer on first action
+        // Iniciar temporizador en primera acción
         if (this.gameState.status === GameStatus.NotStarted) {
             this.startTimer();
             this.gameState.status = GameStatus.InProgress;
@@ -544,7 +544,7 @@ class GameController {
 
         const isFlagged = this.gameBoard.toggleFlag(position);
 
-        // Update flag count
+        // Actualizar contador de banderas
         if (isFlagged) {
             this.gameState.flagsPlaced++;
         } else {
@@ -553,22 +553,22 @@ class GameController {
 
         this.gameState.remainingMines = this.gameBoard.getMineCount() - this.gameState.flagsPlaced;
 
-        // Update UI for the cell
+        // Actualizar UI de la celda
         this.uiRenderer.updateCell(this.gameBoard.getCell(position));
         this.updateGameState();
     }
 
     /**
-     * Ends the game
+     * Finaliza el juego
      * 
-     * @param isWin Whether the game was won
+     * @param isWin Indica si el juego fue ganado
      */
     private gameOver(isWin: boolean): void {
         this.stopTimer();
 
         if (isWin) {
             this.gameState.status = GameStatus.Won;
-            // Set flags on all mines when game is won
+            // Marcar todas las minas al ganar
             const cells = this.gameBoard.getCells();
             for (let row = 0; row < cells.length; row++) {
                 for (let col = 0; col < cells[row].length; col++) {
@@ -585,7 +585,7 @@ class GameController {
             this.gameState.status = GameStatus.Lost;
             this.gameBoard.revealAllMines();
 
-            // Update UI to show all mines
+            // Actualizar UI para mostrar todas las minas
             const cells = this.gameBoard.getCells();
             for (let row = 0; row < cells.length; row++) {
                 for (let col = 0; col < cells[row].length; col++) {
@@ -599,7 +599,7 @@ class GameController {
     }
 
     /**
-     * Starts the game timer
+     * Inicia el temporizador del juego
      */
     private startTimer(): void {
         this.startTime = Date.now();
@@ -610,7 +610,7 @@ class GameController {
     }
 
     /**
-     * Stops the game timer
+     * Detiene el temporizador del juego
      */
     private stopTimer(): void {
         if (this.timer !== null) {
@@ -620,14 +620,14 @@ class GameController {
     }
 
     /**
-     * Updates the game state in the UI
+     * Actualiza el estado del juego en la UI
      */
     private updateGameState(): void {
         this.uiRenderer.updateGameState(this.gameState);
     }
 
     /**
-     * Starts a new game with the current difficulty
+     * Inicia un nuevo juego con la dificultad actual
      */
     newGame(): void {
         const { rows, cols } = this.gameBoard.getDimensions();
@@ -638,10 +638,10 @@ class GameController {
     }
 }
 
-// ================= UI RENDERER CLASS =================
+// ================= CLASE RENDERIZADOR DE UI =================
 
 /**
- * Renders the game UI and handles DOM interactions
+ * Renderiza la interfaz de usuario y maneja interacciones con el DOM
  */
 class UIRenderer {
     private boardElement: HTMLElement;
@@ -652,7 +652,7 @@ class UIRenderer {
     private difficultySelect: HTMLSelectElement;
 
     /**
-     * Creates a new UI renderer
+     * Crea un nuevo renderizador de UI
      */
     constructor() {
         this.boardElement = document.getElementById('game-board') as HTMLElement;
@@ -664,26 +664,26 @@ class UIRenderer {
 
         if (!this.boardElement || !this.statusElement || !this.timerElement ||
             !this.mineCounterElement || !this.newGameButton || !this.difficultySelect) {
-            throw new Error('Required UI elements not found!');
+            throw new Error('¡Elementos de UI requeridos no encontrados!');
         }
     }
 
     /**
-     * Renders the game board
+     * Renderiza el tablero de juego
      * 
-     * @param gameBoard The game board to render
+     * @param gameBoard Tablero de juego a renderizar
      */
     renderBoard(gameBoard: GameBoard): void {
-        // Clear existing board
+        // Limpiar tablero existente
         this.boardElement.innerHTML = '';
 
         const { rows, cols } = gameBoard.getDimensions();
 
-        // Set CSS grid properties
+        // Establecer propiedades de grid CSS
         this.boardElement.style.gridTemplateRows = `repeat(${rows}, 30px)`;
         this.boardElement.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
 
-        // Create cells
+        // Crear celdas
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 const cell = gameBoard.getCell({ row, col });
@@ -695,10 +695,10 @@ class UIRenderer {
     }
 
     /**
-     * Creates a DOM element for a cell
+     * Crea un elemento DOM para una celda
      * 
-     * @param cell The cell to create an element for
-     * @returns The created element
+     * @param cell Celda para crear el elemento
+     * @returns El elemento creado
      */
     private createCellElement(cell: Cell): HTMLElement {
         const cellElement = document.createElement('div');
@@ -706,10 +706,10 @@ class UIRenderer {
         cellElement.dataset.row = cell.getPosition().row.toString();
         cellElement.dataset.col = cell.getPosition().col.toString();
 
-        // Ensure proper accessibility attributes
+        // Atributos de accesibilidad
         cellElement.setAttribute('role', 'button');
         cellElement.setAttribute('tabindex', '0');
-        cellElement.setAttribute('aria-label', `Cell at row ${cell.getPosition().row + 1}, column ${cell.getPosition().col + 1}`);
+        cellElement.setAttribute('aria-label', `Celda en fila ${cell.getPosition().row + 1}, columna ${cell.getPosition().col + 1}`);
 
         this.updateCellElement(cellElement, cell);
 
@@ -717,9 +717,9 @@ class UIRenderer {
     }
 
     /**
-     * Updates the UI for a cell
+     * Actualiza la UI de una celda
      * 
-     * @param cell The cell to update
+     * @param cell Celda a actualizar
      */
     updateCell(cell: Cell): void {
         const position = cell.getPosition();
@@ -731,17 +731,17 @@ class UIRenderer {
     }
 
     /**
-     * Updates a cell element to match the state of a cell
+     * Actualiza un elemento de celda para igualar el estado de una celda
      * 
-     * @param cellElement The element to update
-     * @param cell The cell to match
+     * @param cellElement Elemento a actualizar
+     * @param cell Celda de referencia
      */
     private updateCellElement(cellElement: HTMLElement, cell: Cell): void {
-        // Reset classes
+        // Reiniciar clases
         cellElement.className = 'cell';
         cellElement.textContent = '';
 
-        // Set state-based classes and content
+        // Establecer clases y contenido según estado
         switch (cell.getState()) {
             case CellState.Hidden:
                 cellElement.classList.add('hidden');
@@ -750,7 +750,7 @@ class UIRenderer {
             case CellState.Flagged:
                 cellElement.classList.add('flagged');
                 cellElement.textContent = '🚩';
-                cellElement.setAttribute('aria-label', 'Flagged cell');
+                cellElement.setAttribute('aria-label', 'Celda marcada');
                 break;
 
             case CellState.Revealed:
@@ -759,15 +759,15 @@ class UIRenderer {
                 if (cell.isMineCell()) {
                     cellElement.classList.add('mine');
                     cellElement.textContent = '💣';
-                    cellElement.setAttribute('aria-label', 'Mine');
+                    cellElement.setAttribute('aria-label', 'Mina');
                 } else {
                     const adjacentMines = cell.getAdjacentMines();
                     if (adjacentMines > 0) {
                         cellElement.textContent = adjacentMines.toString();
                         cellElement.classList.add(`adjacent-${adjacentMines}`);
-                        cellElement.setAttribute('aria-label', `${adjacentMines} adjacent mines`);
+                        cellElement.setAttribute('aria-label', `${adjacentMines} minas adyacentes`);
                     } else {
-                        cellElement.setAttribute('aria-label', 'Empty cell');
+                        cellElement.setAttribute('aria-label', 'Celda vacía');
                     }
                 }
                 break;
@@ -775,48 +775,48 @@ class UIRenderer {
     }
 
     /**
-     * Updates the game state in the UI
+     * Actualiza el estado del juego en la UI
      * 
-     * @param gameState The game state to display
+     * @param gameState Estado del juego a mostrar
      */
     updateGameState(gameState: GameState): void {
-        // Update status
+        // Actualizar estado
         switch (gameState.status) {
             case GameStatus.NotStarted:
-                this.statusElement.textContent = 'Click to start';
+                this.statusElement.textContent = 'Haz clic para comenzar';
                 this.statusElement.className = '';
                 break;
 
             case GameStatus.InProgress:
-                this.statusElement.textContent = 'Game in progress';
+                this.statusElement.textContent = 'Juego en progreso';
                 this.statusElement.className = 'in-progress';
                 break;
 
             case GameStatus.Won:
-                this.statusElement.textContent = 'You Won! 🎉';
+                this.statusElement.textContent = '¡Ganaste! 🎉';
                 this.statusElement.className = 'won';
                 break;
 
             case GameStatus.Lost:
-                this.statusElement.textContent = 'Game Over 💥';
+                this.statusElement.textContent = 'Juego Perdido 💥';
                 this.statusElement.className = 'lost';
                 break;
         }
 
-        // Update timer
+        // Actualizar temporizador
         this.timerElement.textContent = gameState.timeElapsed.toString().padStart(3, '0');
 
-        // Update mine counter
+        // Actualizar contador de minas
         this.mineCounterElement.textContent = Math.max(0, gameState.remainingMines).toString().padStart(3, '0');
     }
 
     /**
-     * Sets up event listeners for user interactions
+     * Configura los event listeners para interacciones del usuario
      * 
-     * @param controller The game controller to use
+     * @param controller Controlador de juego a utilizar
      */
     setupEventListeners(controller: GameController): void {
-        // Board cell click events
+        // Eventos de clic en celdas
         this.boardElement.addEventListener('click', (event) => {
             const cellElement = (event.target as HTMLElement).closest('.cell') as HTMLElement;
             if (cellElement) {
@@ -826,7 +826,7 @@ class UIRenderer {
             }
         });
 
-        // Board cell right-click events
+        // Eventos de clic derecho en celdas
         this.boardElement.addEventListener('contextmenu', (event) => {
             event.preventDefault();
             const cellElement = (event.target as HTMLElement).closest('.cell') as HTMLElement;
@@ -837,20 +837,20 @@ class UIRenderer {
             }
         });
 
-        // Keyboard support for cells
+        // Soporte para teclado en celdas
         this.boardElement.addEventListener('keydown', (event) => {
             const cellElement = event.target as HTMLElement;
             if (cellElement.classList.contains('cell')) {
                 const row = parseInt(cellElement.dataset.row || '0', 10);
                 const col = parseInt(cellElement.dataset.col || '0', 10);
 
-                // Enter or Space to reveal cell
+                // Enter o Espacio para revelar celda
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     controller.handleCellClick({ row, col });
                 }
 
-                // F key to flag cell
+                // Tecla F para marcar celda
                 if (event.key === 'f' || event.key === 'F') {
                     event.preventDefault();
                     controller.handleCellRightClick({ row, col });
@@ -858,12 +858,12 @@ class UIRenderer {
             }
         });
 
-        // New game button
+        // Botón de nuevo juego
         this.newGameButton.addEventListener('click', () => {
             controller.newGame();
         });
 
-        // Difficulty selection
+        // Selección de dificultad
         this.difficultySelect.addEventListener('change', () => {
             const difficulty = parseInt(this.difficultySelect.value, 10) as GameDifficulty;
             controller.setDifficulty(difficulty);
@@ -871,10 +871,10 @@ class UIRenderer {
     }
 }
 
-// ================= UNIT TESTS =================
+// ================= PRUEBAS UNITARIAS =================
 
 /**
- * Runs unit tests for the Minesweeper game
+ * Ejecuta pruebas unitarias para el juego Buscaminas
  */
 class TestRunner {
     runTests(): void {
@@ -884,69 +884,69 @@ class TestRunner {
         this.testRevealCell();
         this.testWinCondition();
 
-        console.log('All tests completed successfully.');
+        console.log('Todas las pruebas completadas exitosamente.');
     }
 
     private testCellFunctionality(): void {
-        console.log('Testing Cell functionality...');
+        console.log('Probando funcionalidad de la celda...');
 
-        // Create a cell
+        // Crear una celda
         const cell = new Cell({ row: 0, col: 0 }, false);
 
-        // Test initial state
-        this.assert(cell.getState() === CellState.Hidden, 'Cell should be hidden initially');
-        this.assert(!cell.isMineCell(), 'Cell should not be a mine initially');
+        // Probar estado inicial
+        this.assert(cell.getState() === CellState.Hidden, 'La celda debería estar oculta inicialmente');
+        this.assert(!cell.isMineCell(), 'La celda no debería ser una mina inicialmente');
 
-        // Test toggling flag
+        // Probar cambio de bandera
         cell.toggleFlag();
-        this.assert(cell.getState() === CellState.Flagged, 'Cell should be flagged after toggle');
+        this.assert(cell.getState() === CellState.Flagged, 'La celda debería estar marcada después de cambiar');
 
         cell.toggleFlag();
-        this.assert(cell.getState() === CellState.Hidden, 'Cell should be hidden after second toggle');
+        this.assert(cell.getState() === CellState.Hidden, 'La celda debería estar oculta después del segundo cambio');
 
-        // Test revealing
+        // Probar revelado
         cell.reveal();
-        this.assert(cell.getState() === CellState.Revealed, 'Cell should be revealed after reveal()');
+        this.assert(cell.getState() === CellState.Revealed, 'La celda debería estar revelada después de reveal()');
 
-        // Test reset
+        // Probar reinicio
         cell.reset();
-        this.assert(cell.getState() === CellState.Hidden, 'Cell should be hidden after reset');
-        this.assert(!cell.isMineCell(), 'Cell should not be a mine after reset');
+        this.assert(cell.getState() === CellState.Hidden, 'La celda debería estar oculta después de reset');
+        this.assert(!cell.isMineCell(), 'La celda no debería ser una mina después de reset');
 
-        console.log('Cell functionality tests passed.');
+        console.log('Pruebas de funcionalidad de celda pasadas.');
     }
 
     private testBoardInitialization(): void {
-        console.log('Testing Board initialization...');
+        console.log('Probando inicialización del tablero...');
 
-        // Create a 5x5 board with 5 mines
+        // Crear tablero 5x5 con 5 minas
         const board = new GameBoard({ rows: 5, cols: 5, mines: 5 });
 
         const { rows, cols } = board.getDimensions();
-        this.assert(rows === 5 && cols === 5, 'Board dimensions should be 5x5');
-        this.assert(board.getMineCount() === 5, 'Board should have 5 mines');
+        this.assert(rows === 5 && cols === 5, 'Las dimensiones del tablero deberían ser 5x5');
+        this.assert(board.getMineCount() === 5, 'El tablero debería tener 5 minas');
 
-        // Check that all cells are hidden initially
+        // Verificar que todas las celdas están ocultas inicialmente
         const cells = board.getCells();
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                this.assert(cells[r][c].getState() === CellState.Hidden, `Cell at (${r}, ${c}) should be hidden`);
+                this.assert(cells[r][c].getState() === CellState.Hidden, `Celda en (${r}, ${c}) debería estar oculta`);
             }
         }
 
-        console.log('Board initialization tests passed.');
+        console.log('Pruebas de inicialización del tablero pasadas.');
     }
 
     private testMineGeneration(): void {
-        console.log('Testing mine generation...');
+        console.log('Probando generación de minas...');
 
-        // Create a 5x5 board with 5 mines
+        // Crear tablero 5x5 con 5 minas
         const board = new GameBoard({ rows: 5, cols: 5, mines: 5 });
 
-        // Place mines with a safe position at (0, 0)
+        // Colocar minas con posición segura en (0, 0)
         board.placeMines({ row: 0, col: 0 });
 
-        // Count the number of mines
+        // Contar número de minas
         let mineCount = 0;
         const cells = board.getCells();
         for (let r = 0; r < 5; r++) {
@@ -957,23 +957,23 @@ class TestRunner {
             }
         }
 
-        this.assert(mineCount === 5, `Board should have 5 mines, found ${mineCount}`);
-        this.assert(!cells[0][0].isMineCell(), 'Safe position should not have a mine');
+        this.assert(mineCount === 5, `El tablero debería tener 5 minas, encontradas ${mineCount}`);
+        this.assert(!cells[0][0].isMineCell(), 'La posición segura no debería tener una mina');
 
-        console.log('Mine generation tests passed.');
+        console.log('Pruebas de generación de minas pasadas.');
     }
 
     private testRevealCell(): void {
-        console.log('Testing reveal cell functionality...');
+        console.log('Probando funcionalidad de revelar celdas...');
 
-        // Create a 3x3 board with 1 mine at (1, 1)
+        // Crear tablero 3x3 con 1 mina en (1, 1)
         const board = new GameBoard({ rows: 3, cols: 3, mines: 1 });
 
-        // Manually place a mine at (1, 1)
+        // Colocar mina manualmente en (1, 1)
         const cells = board.getCells();
         cells[1][1].setMine(true);
 
-        // Calculate adjacent mines
+        // Calcular minas adyacentes
         for (let r = 0; r < 3; r++) {
             for (let c = 0; c < 3; c++) {
                 if (!cells[r][c].isMineCell()) {
@@ -992,33 +992,33 @@ class TestRunner {
             }
         }
 
-        // Test first click (should be safe)
+        // Probar primer clic (debería ser seguro)
         const result1 = board.revealCell({ row: 0, col: 0 });
-        this.assert(result1.success, 'Reveal should be successful');
-        this.assert(!result1.hitMine, 'Should not hit a mine');
-        this.assert(result1.cellsRevealed.length === 1, 'Should reveal exactly 1 cell');
-        this.assert(cells[0][0].getState() === CellState.Revealed, 'Cell (0, 0) should be revealed');
+        this.assert(result1.success, 'Revelado debería ser exitoso');
+        this.assert(!result1.hitMine, 'No debería encontrar una mina');
+        this.assert(result1.cellsRevealed.length === 1, 'Debería revelar exactamente 1 celda');
+        this.assert(cells[0][0].getState() === CellState.Revealed, 'Celda (0, 0) debería estar revelada');
 
-        // Test revealing a mine
+        // Probar revelar una mina
         const result2 = board.revealCell({ row: 1, col: 1 });
-        this.assert(result2.success, 'Reveal should be successful');
-        this.assert(result2.hitMine, 'Should hit a mine');
-        this.assert(cells[1][1].getState() === CellState.Revealed, 'Mine cell should be revealed');
+        this.assert(result2.success, 'Revelado debería ser exitoso');
+        this.assert(result2.hitMine, 'Debería encontrar una mina');
+        this.assert(cells[1][1].getState() === CellState.Revealed, 'Celda mina debería estar revelada');
 
-        console.log('Reveal cell tests passed.');
+        console.log('Pruebas de revelado de celdas pasadas.');
     }
 
     private testWinCondition(): void {
-        console.log('Testing win condition...');
+        console.log('Probando condición de victoria...');
 
-        // Create a 3x3 board with 1 mine at (1, 1)
+        // Crear tablero 3x3 con 1 mina en (1, 1)
         const board = new GameBoard({ rows: 3, cols: 3, mines: 1 });
 
-        // Manually place a mine at (1, 1)
+        // Colocar mina manualmente en (1, 1)
         const cells = board.getCells();
         cells[1][1].setMine(true);
 
-        // Reveal all non-mine cells
+        // Revelar todas las celdas sin minas
         for (let r = 0; r < 3; r++) {
             for (let c = 0; c < 3; c++) {
                 if (!cells[r][c].isMineCell()) {
@@ -1027,30 +1027,30 @@ class TestRunner {
             }
         }
 
-        // Check win condition
-        this.assert(board.checkWinCondition(), 'Win condition should be true when all non-mine cells are revealed');
+        // Verificar condición de victoria
+        this.assert(board.checkWinCondition(), 'Condición de victoria debería ser cierta cuando todas las celdas sin minas están reveladas');
 
-        // Reset a cell to hidden
+        // Reiniciar una celda
         cells[0][0].reset();
 
-        // Check win condition again
-        this.assert(!board.checkWinCondition(), 'Win condition should be false when not all non-mine cells are revealed');
+        // Verificar condición de victoria de nuevo
+        this.assert(!board.checkWinCondition(), 'Condición de victoria debería ser falsa cuando no todas las celdas sin minas están reveladas');
 
-        console.log('Win condition tests passed.');
+        console.log('Pruebas de condición de victoria pasadas.');
     }
 
     private assert(condition: boolean, message: string): void {
         if (!condition) {
-            console.error(`Assertion failed: ${message}`);
-            throw new Error(`Assertion failed: ${message}`);
+            console.error(`Error en la prueba: ${message}`);
+            throw new Error(`Error en la prueba: ${message}`);
         }
     }
 }
 
-// ================= APPLICATION ENTRY POINT =================
+// ================= PUNTO DE ENTRADA DE LA APLICACIÓN =================
 
 /**
- * Initializes the Minesweeper game when the DOM is ready
+ * Inicializa el juego Buscaminas cuando el DOM está listo
  */
 window.addEventListener('DOMContentLoaded', () => {
     const uiRenderer = new UIRenderer();
@@ -1058,7 +1058,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     uiRenderer.setupEventListeners(gameController);
 
-    // Run tests in non-production environments if needed
+    // Ejecutar pruebas en entornos no productivos si es necesario
     // const testRunner = new TestRunner();
     // testRunner.runTests();
 });
